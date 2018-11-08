@@ -23,7 +23,7 @@ gt_data_path = os.path.abspath('../CRBD/GT data')
 image_out_path = os.path.abspath('../img/algorithm_2')
 
 use_camera = False  # whether or not to use the test images or camera
-images_to_save = [] # which test images to save
+images_to_save = [2, 3, 4, 5] # which test images to save
 timing = False      # whether to time the test images
 
 curr_image = 0 # global counter
@@ -45,7 +45,7 @@ ANGLE_THRESH = math.pi*(30.0/180) # How steep angles the crop rows can be in rad
 def main():
 
     if use_camera == False:
-
+        print("-----------------Inside Main------------")
         diff_times = []
 
         for image_name in sorted(os.listdir(image_data_path)):
@@ -56,7 +56,7 @@ def main():
 
             image_path = os.path.join(image_data_path, image_name)
             image_in = cv2.imread(image_path)
-
+            print(print("-----------------Image Path------------" + image_path))
             crop_lines = crop_row_detect(image_in)
 
             if timing == False:
@@ -98,6 +98,7 @@ def crop_row_detect(image_in):
     '''Inputs an image and outputs the lines'''
 
     save_image('0_image_in', image_in)
+    print("-----------------Save Done------------")
 
     ### Grayscale Transform ###
     image_edit = grayscale_transform(image_in)
@@ -106,12 +107,16 @@ def crop_row_detect(image_in):
     ### Skeletonization ###
     skeleton = skeletonize(image_edit)
     save_image('2_image_skeleton', skeleton)
+    print("-----------------Skeleton Save Done------------")
 
     ### Hough Transform ###
     (crop_lines, crop_lines_hough) = crop_point_hough(skeleton)
+    print("-----------------Crop Line Hough Done------------")
 
     save_image('3_image_hough', cv2.addWeighted(image_in, 1, crop_lines_hough, 1, 0.0))
     save_image('4_image_lines', cv2.addWeighted(image_in, 1, crop_lines, 1, 0.0))
+    
+    print("-----------------Returning the crop lines------------")
 
     return crop_lines
 
@@ -165,11 +170,12 @@ def crop_point_hough(crop_points):
 
     while hough_thresh > HOUGH_THRESH_MIN and not rows_found:
         crop_line_data = cv2.HoughLines(crop_points, HOUGH_RHO, HOUGH_ANGLE, hough_thresh)
-
+        
         crop_lines = np.zeros((height, width, 3), dtype=np.uint8)
         crop_lines_hough = np.zeros((height, width, 3), dtype=np.uint8)
+        print("-----------------Crop line data from hughlines------------", type(crop_line_data))
 
-        if crop_line_data != None:
+        if crop_line_data is not None:
 
             # get rid of duplicate lines. May become redundant if a similarity threshold is done
             crop_line_data_1 = tuple_list_round(crop_line_data[0], -1, 4)

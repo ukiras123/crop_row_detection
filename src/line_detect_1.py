@@ -120,7 +120,7 @@ def crop_row_detect(image_in):
 def save_image(image_name, image_data):
     if curr_image in images_to_save:
         image_name_new = os.path.join(image_out_path, "{0}_{1}.jpg".format(image_name, str(curr_image) ))
-        
+        print('-------',image_name_new)
         cv2.imwrite(image_name_new, image_data)
 
    
@@ -138,7 +138,7 @@ def strip_process(image_edit):
     crop_points = np.zeros((height, width), dtype=np.uint8)
     
     for strip_number in range(NUMBER_OF_STRIPS):
-        image_strip = image_edit[(strip_number*strip_height):((strip_number+1)*strip_height-1), :]
+        image_strip = image_edit[int(strip_number*strip_height):int((strip_number+1)*strip_height-1), :]
         
         
         if strip_number == strip_to_save:
@@ -175,7 +175,7 @@ def strip_process(image_edit):
                 v_diff[col_number] = -1
                 
                 if (col_number - diff_start) > DIFF_NOISE_THRESH:
-                    v_mid[diff_start + (col_number-diff_start)/2] = 1
+                    v_mid[int(diff_start + int((col_number-diff_start)/2))] = 1
                     diff_end = col_number
                     diff_end_found = True
         
@@ -185,7 +185,7 @@ def strip_process(image_edit):
             print(v_diff)
             print(v_mid)
         
-        crop_points[(strip_number*strip_height), :] = v_mid
+        crop_points[int(strip_number*strip_height), :] = v_mid
         crop_points *= 255
         
         #image_edit[(strip_number*strip_height):((strip_number+1)*strip_height-1), :] = image_strip
@@ -203,7 +203,7 @@ def crop_point_hough(crop_points):
     
     crop_lines = np.zeros((height, width, 3), dtype=np.uint8)
     
-    if crop_line_data != None:
+    if crop_line_data is not None:
         crop_line_data = crop_line_data[0]
         #print(crop_line_data)
         
